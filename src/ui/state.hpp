@@ -9,18 +9,16 @@ using std::chrono::milliseconds;
 
 struct MenuState {
   Mode mode = Mode::kSequential;
-  milliseconds compute_time;
-  milliseconds draw_time;
-  int display_width = 0;
-  int display_height = 0;
+  milliseconds compute_time{};
+  milliseconds draw_time{};
+  int display_width{};
+  int display_height{};
+  bool is_computing{};
 
-  bool operator==(const MenuState& other) const {
-    return mode == other.mode && compute_time == other.compute_time &&
-           draw_time == other.draw_time &&
-           display_width == other.display_width &&
-           display_height == other.display_height;
+  [[nodiscard]] bool NeedsRecomputation(const MenuState& other) const {
+    return mode != other.mode || display_width != other.display_width ||
+           display_height != other.display_height;
   }
-  bool operator!=(const MenuState& other) const { return !(*this == other); }
 };
 
 }  // namespace mandelbrot_visualizer::ui

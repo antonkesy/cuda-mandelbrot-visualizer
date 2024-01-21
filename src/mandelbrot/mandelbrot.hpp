@@ -16,7 +16,7 @@ class Mandelbrot {
       : height(height), width(width), pixels(height * width) {}
   virtual ~Mandelbrot() = default;
   Mandelbrot(const Mandelbrot &) = default;
-  Mandelbrot(Mandelbrot &&) = delete;
+  Mandelbrot(Mandelbrot &&) = default;
   Mandelbrot &operator=(const Mandelbrot &) = delete;
   Mandelbrot &operator=(Mandelbrot &&) = delete;
 
