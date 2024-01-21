@@ -11,10 +11,12 @@ services:
       - DISPLAY=${DISPLAY}
       - NVIDIA_DRIVER_CAPABILITIES=all
       - NVIDIA_VISIBLE_DEVICES=all
-    command: ["./cuda_mandelbrot_visualizer"]
+    command: ["./build/cuda_mandelbrot_visualizer"]
 
     build:
       context: .
+      tags:
+        - base
       dockerfile: Dockerfile
 
     deploy:
