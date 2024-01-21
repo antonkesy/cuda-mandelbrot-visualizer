@@ -1,4 +1,4 @@
-# Cuda Mandelbrot Visualizer
+# Mandelbrot Visualizer
 
 ## Build and Execution
 
@@ -7,14 +7,14 @@
 build:
 
 ```
-docker compose build cuda_mandelbrot_visualizer
+docker compose build mandelbrot_visualizer
 ```
 
 run with xorg:
 
 ```
 xhost +local:docker || true
-docker compose run --rm cuda_mandelbrot_visualizer
+docker compose run --rm mandelbrot_visualizer
 ```
 
 ### Natively
@@ -40,7 +40,7 @@ cmake --build .
 #### Execution
 
 ```
-./cuda_mandelbrot_visualizer
+./mandelbrot_visualizer
 ```
 
 ## Development

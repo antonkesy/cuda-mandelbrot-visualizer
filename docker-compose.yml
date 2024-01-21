@@ -1,8 +1,8 @@
 version: "3"
 
 services:
-  cuda_mandelbrot_visualizer:
-    image: cuda_mandelbrot_visualizer
+  mandelbrot_visualizer:
+    image: mandelbrot_visualizer
     privileged: true
     network_mode: host
     volumes:
@@ -11,7 +11,7 @@ services:
       - DISPLAY=${DISPLAY}
       - NVIDIA_DRIVER_CAPABILITIES=all
       - NVIDIA_VISIBLE_DEVICES=all
-    command: ["./build/cuda_mandelbrot_visualizer"]
+    command: ["./build/mandelbrot_visualizer"]
 
     build:
       context: .

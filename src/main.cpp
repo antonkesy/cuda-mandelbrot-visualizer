@@ -21,7 +21,7 @@ int main() {
 
   const auto start_width = 1200;
   const auto start_height = 900;
-  Window window("Cuda Mandelbrot Visualizer", start_width, start_height);
+  Window window("Mandelbrot Visualizer", start_width, start_height);
 
   std::unique_ptr<Mandelbrot> mandelbrot =
       std::make_unique<SequentialMandelbrot>(0, 0);
