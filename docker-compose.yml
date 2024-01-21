@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  cuda_mandelbrot_visualizer:
+    image: cuda_mandelbrot_visualizer
+    privileged: true
+    network_mode: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - NVIDIA_VISIBLE_DEVICES=all
+    command: ["./cuda_mandelbrot_visualizer"]
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
