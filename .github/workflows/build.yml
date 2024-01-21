@@ -6,11 +6,14 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build Docker image
-        run: |
-          docker build . -t ci
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+      - name: build and pre-commit
+        uses: docker/build-push-action@v5
+        with:
+          context: .
