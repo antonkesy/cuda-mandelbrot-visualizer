@@ -4,16 +4,20 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-namespace mandelbrot_visualizer::ui {
+#include "mode.hpp"
+#include "state.hpp"
 
-enum class Mode { kSequential, kParallel };
+namespace mandelbrot_visualizer::ui {
 
 class Menu {
  public:
-  static Mode ShowMenu();
+  static Mode ShowMenu(const MenuState& state);
 
  private:
-  static Mode ModeCombo();
+  static Mode ModeCombo(Mode current);
   static void FpsInfo();
+  static void DurationInfo(const MenuState& state);
+  static void WindowInfo(const MenuState& state);
 };
+
 }  // namespace mandelbrot_visualizer::ui

@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenGL REQUIRED)
+find_package(OpenMP REQUIRED)
 
 add_subdirectory(external/glfw)
 add_subdirectory(external/glew-cmake)
@@ -21,10 +22,11 @@ set(IMGUI_SOURCES
 
 set(SOURCE_FILES
     src/main.cpp src/mandelbrot/mandelbrot.cpp src/mandelbrot/sequential.cpp
-    src/ui/menu.cpp src/ui/window.cpp)
+    src/mandelbrot/openmp.cpp src/ui/menu.cpp src/ui/window.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 
-target_link_libraries(${PROJECT_NAME} glfw libglew_static OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} glfw libglew_static OpenGL::GL
+                      OpenMP::OpenMP_CXX)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_PATH}
                                                    ${IMGUI_PATH}/backends)
