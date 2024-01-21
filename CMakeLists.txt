@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(cuda_mandelbrot_visualizer LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenGL REQUIRED)
@@ -19,7 +19,9 @@ set(IMGUI_SOURCES
     ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp
     ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
 
-set(SOURCE_FILES src/main.cpp)
+set(SOURCE_FILES
+    src/main.cpp src/mandelbrot/mandelbrot.cpp src/mandelbrot/sequential.cpp
+    src/ui/menu.cpp src/ui/window.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} glfw libglew_static OpenGL::GL)

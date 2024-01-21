@@ -1,60 +1,59 @@
-#include <GLFW/glfw3.h>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <memory>
+
+#include "mandelbrot/mandelbrot.hpp"
+#include "mandelbrot/sequential.hpp"
+#include "ui/menu.hpp"
+#include "ui/window.hpp"
 
 int main() {
-  if (glfwInit() == 0) {
-    return -1;
-  }
+  using mandelbrot_visualizer::Mandelbrot;
+  using mandelbrot_visualizer::SequentialMandelbrot;
+  using mandelbrot_visualizer::ui::Menu;
+  using mandelbrot_visualizer::ui::Mode;
+  using mandelbrot_visualizer::ui::Window;
+  using std::make_unique;
 
-  const auto width = 1200;
-  const auto height = 900;
-  GLFWwindow *window = glfwCreateWindow(
-      width, height, "Cuda Mandelbrot Visualizer", nullptr, nullptr);
-  if (window == nullptr) {
-    glfwTerminate();
-    return -1;
-  }
+  const auto start_width = 1200;
+  const auto start_height = 900;
+  Window window("Cuda Mandelbrot Visualizer", start_width, start_height);
 
-  glfwMakeContextCurrent(window);
+  bool use_cuda = false;
 
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  auto last_width = 0;
+  auto last_height = 0;
+  auto last_mode = Mode::kSequential;
 
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init("#version 330");
+  std::unique_ptr<Mandelbrot> mandelbrot =
+      std::make_unique<SequentialMandelbrot>(0, 0);
 
-  while (glfwWindowShouldClose(window) == 0) {
-    glfwPollEvents();
+  auto mode = Mode::kSequential;
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+  const auto menu = [&]() { mode = Menu::ShowMenu(); };
+  const auto render_mandelbrot = [&](int display_w, int display_h) {
+    if (last_width != display_w || last_height != display_h ||
+        last_mode != mode) {
+      // TODO(ak): calculate in background -> dont block UI
+      last_width = display_w;
+      last_height = display_h;
+      last_mode = mode;
 
-    ImGui::Begin("Hello, GLFW!");
-    ImGui::Text("Hello, world!");  // NOLINT(cppcoreguidelines-pro-type-vararg)
-    ImGui::End();
+      switch (mode) {
+        case Mode::kSequential:
+          mandelbrot = make_unique<SequentialMandelbrot>(display_h, display_w);
+          break;
+        case Mode::kParallel:
+          // mandelbrot = make_unique<ParallelMandelbrot>(display_h, display_w);
+          // mandelbrot = make_unique<SequentialMandelbrot>(display_h,
+          // display_w);
+          break;
+      }
+      mandelbrot->Compute();
+    }
 
-    ImGui::Render();
-    int display_w{};
-    int display_h{};
-    glfwGetFramebufferSize(window, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
-    glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
-    glClear(GL_COLOR_BUFFER_BIT);
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    mandelbrot->Draw();
+  };
 
-    glfwSwapBuffers(window);
-  }
-
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-
-  glfwTerminate();
+  window.EndlessRender(menu, render_mandelbrot);
 
   return 0;
 }

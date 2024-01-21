@@ -8,4 +8,4 @@ repos:
     rev: v1.3.5
     hooks:
       - id: clang-tidy
-        args: [--p=build]
+        args: [-extra-arg=-std=c++17, --p=build]

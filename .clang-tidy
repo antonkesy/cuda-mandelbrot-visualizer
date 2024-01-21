@@ -37,6 +37,7 @@ Checks: >
   -bugprone-unchecked-optional-access
   -llvm-header-guard
   -cppcoreguidelines-pro-type-vararg
+  -clang-diagnostic-c++17-extensions
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: "*"
