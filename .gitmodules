@@ -3,7 +3,7 @@
 	url = https://github.com/glfw/glfw.git
 [submodule "external/glew-cmake"]
 	path = external/glew-cmake
-	url = git@github.com:Perlmint/glew-cmake.git
+	url = https://github.com/Perlmint/glew-cmake.git
 [submodule "external/imgui"]
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
