@@ -7,13 +7,14 @@ namespace mandelbrot_visualizer::ui {
 
 MenuValues Menu::ShowMenu(const MenuState& state) {
   ImGui::NewFrame();
+  ImGui::SetNextWindowPos(ImVec2(0, 0));
   ImGui::Begin("Render Settings");
   const auto mode = ModeCombo(state.mode);
   WindowInfo(state);
   DurationInfo(state);
-  FpsInfo();
   auto color = state.base_color;
   SetColor(color);
+  FpsInfo();
   ImGui::End();
   return {mode, color};
 }
