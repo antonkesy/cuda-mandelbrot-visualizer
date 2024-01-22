@@ -46,6 +46,8 @@ void Menu::DurationInfo(const MenuState& state) {
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Compute Time: %.1lims, Draw Time: %.1lims", state.compute_time.count(),
       state.draw_time.count());
+  // TODO(ak): add progress bar + progress from mandel
+  // ImGui::ProgressBar(0, ImVec2(-1, 0));
 }
 
 void Menu::WindowInfo(const MenuState& state) {

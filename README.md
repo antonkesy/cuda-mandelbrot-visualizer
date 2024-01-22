@@ -1,5 +1,16 @@
 # Mandelbrot Visualizer
 
+## Used Features and Libs?
+
+- ImGUI
+- OpenGL
+- GLFW
+- OpenMP
+- Futures
+- Docker
+- clang-format/tidy
+- ...?
+
 ## Build and Execution
 
 ### Docker
