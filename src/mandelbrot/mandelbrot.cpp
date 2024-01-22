@@ -10,25 +10,24 @@ std::complex<double> Mandelbrot::PixelToComplex(int x, int y) const {
   return {real, imag};
 }
 
-int Mandelbrot::Iteration(const std::complex<double> &c) {
+int Mandelbrot::Iteration(const std::complex<double> &c) const {
   std::complex<double> z = 0;
   int n = 0;
-  while (std::abs(z) <= 2 && n < Mandelbrot::kMaxIterations) {
+  while (std::abs(z) <= 2 && n < max_iterations) {
     z *= z;
     z += c;
     ++n;
   }
-  if (n == Mandelbrot::kMaxIterations) return Mandelbrot::kMaxIterations;
+  if (n == max_iterations) return max_iterations;
   return n - static_cast<int>(std::log(std::log2(std::abs(z))));
 }
 
 ImVec4 Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
   const auto iterations = Mandelbrot::Iteration(c);
   const auto hue =
-      (static_cast<float>(iterations) / Mandelbrot::kMaxIterations);
+      (static_cast<float>(iterations) / static_cast<float>(max_iterations));
   ui::RGBColor rgb{};
-  ImGui::ColorConvertHSVtoRGB(hue, 1,
-                              iterations < Mandelbrot::kMaxIterations ? 0 : 1,
+  ImGui::ColorConvertHSVtoRGB(hue, 1, iterations < max_iterations ? 0 : 1,
                               rgb[0], rgb[1], rgb[2]);
 
   (void)base_color;

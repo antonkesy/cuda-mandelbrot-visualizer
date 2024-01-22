@@ -15,19 +15,24 @@ namespace mandelbrot_visualizer {
 
 class Mandelbrot {
  public:
-  Mandelbrot(const int height, const int width, const ui::RGBColor &base_color)
-      : height(height),
-        width(width),
+  struct Settings {
+    int height;
+    int width;
+    ui::RGBColor base_color;
+    int max_iterations;
+  };
+
+  explicit Mandelbrot(const Settings &settings)
+      : height(settings.height),
+        width(settings.width),
         pixels(height * width),
-        base_color(base_color) {}
+        base_color(settings.base_color),
+        max_iterations(settings.max_iterations) {}
   virtual ~Mandelbrot() = default;
   Mandelbrot(const Mandelbrot &) = default;
   Mandelbrot(Mandelbrot &&) = default;
   Mandelbrot &operator=(const Mandelbrot &) = delete;
   Mandelbrot &operator=(Mandelbrot &&) = delete;
-
-  // TODO(ak): make this a parameter
-  static constexpr int kMaxIterations = 1000;
 
   // not best desing -> can be forgotten to call ...
   virtual void Compute(const std::atomic<bool> &request_stop) = 0;
@@ -37,7 +42,7 @@ class Mandelbrot {
 
   [[nodiscard]] ImVec4 MandelbrotColor(const std::complex<double> &c) const;
 
-  [[nodiscard]] static int Iteration(const std::complex<double> &c);
+  [[nodiscard]] int Iteration(const std::complex<double> &c) const;
 
  protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
@@ -45,6 +50,7 @@ class Mandelbrot {
   const int height;
   const int width;
   std::vector<ImVec4> pixels;
+  const int max_iterations;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
 };
 

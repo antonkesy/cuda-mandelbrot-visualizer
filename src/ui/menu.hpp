@@ -9,21 +9,17 @@
 
 namespace mandelbrot_visualizer::ui {
 
-struct MenuValues {
-  Mode mode;
-  RGBColor base_color;
-};
-
 class Menu {
  public:
-  static MenuValues ShowMenu(const MenuState& state);
+  static void ShowMenu(VisualizerState& state);
 
  private:
-  static Mode ModeCombo(Mode current);
+  static void ModeCombo(Mode& current);
   static void FpsInfo();
-  static void DurationInfo(const MenuState& state);
-  static void WindowInfo(const MenuState& state);
+  static void DurationInfo(VisualizerState& state);
+  static void WindowInfo(VisualizerState& state);
   static void SetColor(RGBColor& current);
+  static void SetMaxIterations(int& current);
 };
 
 }  // namespace mandelbrot_visualizer::ui

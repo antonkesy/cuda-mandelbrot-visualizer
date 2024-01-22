@@ -8,8 +8,7 @@ namespace mandelbrot_visualizer {
 
 class OpenMPMandelbrot : public Mandelbrot {
  public:
-  OpenMPMandelbrot(const int height, const int width, ui::RGBColor base_color)
-      : Mandelbrot(height, width, base_color) {
+  explicit OpenMPMandelbrot(const Settings &settings) : Mandelbrot(settings) {
     // TODO(ak): print to UI
     // NOLINTNEXTLINE(concurrency-mt-unsafe)
     char *has_cancel = getenv("OMP_CANCELLATION");

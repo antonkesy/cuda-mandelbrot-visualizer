@@ -10,20 +10,23 @@ using std::chrono::milliseconds;
 
 using RGBColor = std::array<float, 3>;
 
-struct MenuState {
+struct VisualizerState {
   Mode mode = Mode::kSequential;
   milliseconds compute_time{};
   milliseconds draw_time{};
   int display_width{};
   int display_height{};
   bool is_computing{};
-  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
   RGBColor base_color{21, 116, 211};  // blue
+  int max_iterations{1000};
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
-  [[nodiscard]] bool NeedsRecomputation(const MenuState& other) const {
+  [[nodiscard]] bool NeedsRecomputation(const VisualizerState& other) const {
     return mode != other.mode || display_width != other.display_width ||
            display_height != other.display_height ||
-           base_color != other.base_color;
+           base_color != other.base_color ||
+           max_iterations != other.max_iterations;
   }
 };
 

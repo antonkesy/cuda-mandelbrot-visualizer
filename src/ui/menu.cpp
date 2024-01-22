@@ -5,21 +5,20 @@
 
 namespace mandelbrot_visualizer::ui {
 
-MenuValues Menu::ShowMenu(const MenuState& state) {
+void Menu::ShowMenu(VisualizerState& state) {
   ImGui::NewFrame();
   ImGui::SetNextWindowPos(ImVec2(0, 0));
   ImGui::Begin("Render Settings");
-  const auto mode = ModeCombo(state.mode);
+  ModeCombo(state.mode);
   WindowInfo(state);
   DurationInfo(state);
-  auto color = state.base_color;
-  SetColor(color);
+  SetMaxIterations(state.max_iterations);
+  SetColor(state.base_color);
   FpsInfo();
   ImGui::End();
-  return {mode, color};
 }
 
-Mode Menu::ModeCombo(const Mode current) {
+void Menu::ModeCombo(Mode& current) {
   static std::vector<std::string> items = {"Sequential", "OpenMP"};
   auto current_item = static_cast<int>(current);
 
@@ -32,7 +31,7 @@ Mode Menu::ModeCombo(const Mode current) {
 
     ImGui::EndCombo();
   }
-  return static_cast<Mode>(current_item);
+  current = static_cast<Mode>(current_item);
 }
 
 void Menu::FpsInfo() {
@@ -44,7 +43,7 @@ void Menu::FpsInfo() {
       1000.0F / io.Framerate, io.Framerate);
 }
 
-void Menu::DurationInfo(const MenuState& state) {
+void Menu::DurationInfo(VisualizerState& state) {
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Compute Time: %.1lims, Draw Time: %.1lims", state.compute_time.count(),
       state.draw_time.count());
@@ -52,13 +51,18 @@ void Menu::DurationInfo(const MenuState& state) {
   // ImGui::ProgressBar(0, ImVec2(-1, 0));
 }
 
-void Menu::WindowInfo(const MenuState& state) {
+void Menu::WindowInfo(VisualizerState& state) {
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Window Size: %ix%i", state.display_width, state.display_height);
 }
 
 void Menu::SetColor(RGBColor& current) {
   ImGui::ColorEdit3("Base Color", current.data());
+}
+
+void Menu::SetMaxIterations(int& current) {
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  ImGui::SliderInt("Max Iterations", &current, 0, 1000);
 }
 
 }  // namespace mandelbrot_visualizer::ui

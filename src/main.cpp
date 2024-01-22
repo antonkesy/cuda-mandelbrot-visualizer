@@ -15,8 +15,8 @@ int main() {
   using mandelbrot_visualizer::SequentialMandelbrot;
   using mandelbrot_visualizer::Stopwatch;
   using mandelbrot_visualizer::ui::Menu;
-  using mandelbrot_visualizer::ui::MenuState;
   using mandelbrot_visualizer::ui::Mode;
+  using mandelbrot_visualizer::ui::VisualizerState;
   using mandelbrot_visualizer::ui::Window;
   using mandelbrot_visualizer::ui::WindowInfo;
   using std::make_unique;
@@ -26,19 +26,15 @@ int main() {
 
   std::unique_ptr<Mandelbrot> mandelbrot = nullptr;
 
-  MenuState current_state;
-  MenuState last_state = current_state;
+  VisualizerState current_state;
+  VisualizerState last_state = current_state;
 
-  const auto menu = [&]() {
-    const auto [mode, color] = Menu::ShowMenu(current_state);
-    current_state.mode = mode;
-    current_state.base_color = color;
-  };
+  const auto menu = [&]() { Menu::ShowMenu(current_state); };
 
-  // FIXME: replace with stack with mutex ... or something
   std::atomic<bool> request_stop{false};
-
+  // FIXME: replace with stack with mutex ... or something
   std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
+
   const auto render_mandelbrot = [&](const WindowInfo& window) {
     current_state.display_width = window.width;
     current_state.display_height = window.height;
@@ -49,14 +45,15 @@ int main() {
       request_stop = true;
 
       const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
+        Mandelbrot::Settings settings{window.height, window.width,
+                                      current_state.base_color,
+                                      current_state.max_iterations};
         auto next = [&]() -> std::unique_ptr<Mandelbrot> {
           switch (current_state.mode) {
             case Mode::kSequential:
-              return make_unique<SequentialMandelbrot>(
-                  window.height, window.width, current_state.base_color);
+              return make_unique<SequentialMandelbrot>(settings);
             case Mode::kOpenMP:
-              return make_unique<OpenMPMandelbrot>(window.height, window.width,
-                                                   current_state.base_color);
+              return make_unique<OpenMPMandelbrot>(settings);
             default:
               assert(false);
           }

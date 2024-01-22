@@ -6,11 +6,10 @@ namespace mandelbrot_visualizer {
 
 class SequentialMandelbrot : public Mandelbrot {
  public:
-  SequentialMandelbrot(const int height, const int width,
-                       ui::RGBColor base_color)
-      : Mandelbrot(height, width, base_color) {}
+  explicit SequentialMandelbrot(const Settings& settings)
+      : Mandelbrot(settings) {}
 
-  void Compute(const std::atomic<bool> &request_stop) override {
+  void Compute(const std::atomic<bool>& request_stop) override {
     for (int y = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x) {
         if (request_stop) return;
