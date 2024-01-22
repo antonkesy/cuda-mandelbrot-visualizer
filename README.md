@@ -13,6 +13,7 @@
 - clang-format/tidy
 - fmt
 - cmake
+- pre-commit
 <!-- - Cuda -->
 - ...?
 
