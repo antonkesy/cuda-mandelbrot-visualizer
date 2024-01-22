@@ -6,15 +6,19 @@
 namespace mandelbrot_visualizer::ui {
 
 void Menu::ShowMenu(VisualizerState& state) {
+  constexpr auto kVSpace = 10.0F;
   ImGui::NewFrame();
   ImGui::SetNextWindowPos(ImVec2(0, 0));
   ImGui::Begin("Render Settings");
-  ModeCombo(state.mode);
   WindowInfo(state);
   DurationInfo(state);
+  FpsInfo();
+  ImGui::Dummy(ImVec2(0.0F, kVSpace));
+  ModeCombo(state.mode);
   SetMaxIterations(state.max_iterations);
   SetColor(state.base_color);
-  FpsInfo();
+  ImGui::Dummy(ImVec2(0.0F, kVSpace));
+  InteractionInfo();
   ImGui::End();
 }
 
@@ -37,10 +41,10 @@ void Menu::ModeCombo(Mode& current) {
 void Menu::FpsInfo() {
   ImGuiIO& io = ImGui::GetIO();
 
+  constexpr auto kToMs = 1000.0F;
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
-      "Application average %.3f ms/frame (%.1f FPS)",
-      // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-      1000.0F / io.Framerate, io.Framerate);
+      "Application average %.3f ms/frame (%.1f FPS)", kToMs / io.Framerate,
+      io.Framerate);
 }
 
 void Menu::DurationInfo(VisualizerState& state) {
@@ -61,8 +65,13 @@ void Menu::SetColor(RGBColor& current) {
 }
 
 void Menu::SetMaxIterations(int& current) {
-  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-  ImGui::SliderInt("Max Iterations", &current, 0, 1000);
+  constexpr auto kMin = 0;
+  constexpr auto kMax = 1000;
+  ImGui::SliderInt("Max Iterations", &current, kMin, kMax);
 }
 
+void Menu::InteractionInfo() {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+  ImGui::Text("Quit: <ESC>/q\nZoom: Select area with mouse");
+}
 }  // namespace mandelbrot_visualizer::ui
