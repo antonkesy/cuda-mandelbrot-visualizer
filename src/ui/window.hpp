@@ -10,6 +10,20 @@
 
 namespace mandelbrot_visualizer::ui {
 
+struct SelectionArea {
+  double start_x{};
+  double start_y{};
+  double end_x{};
+  double end_y{};
+  bool selecting{};
+};
+
+struct WindowInfo {
+  int width{};
+  int height{};
+  SelectionArea mouse_selection;
+};
+
 class Window {
  public:
   Window(const std::string& name, int width, int height);
@@ -19,7 +33,7 @@ class Window {
   Window& operator=(Window&&) = delete;
   ~Window();
   void EndlessRender(const std::function<void()>& imgui_components,
-                     const std::function<void(int, int)>& on_render);
+                     const std::function<void(const WindowInfo&)>& on_render);
 
  private:
   GLFWwindow* window_{};

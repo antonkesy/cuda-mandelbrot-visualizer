@@ -4,6 +4,22 @@
 
 namespace mandelbrot_visualizer::ui {
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+SelectionArea selection_area{};
+
+void DrawRectangle() {
+  // FIXME: lines not visible
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  glLineWidth(300.0F);
+  glBegin(GL_QUADS);
+  glColor3f(0.0F, 0.0F, 0.0F);
+  glVertex2d(selection_area.start_x, selection_area.start_y);
+  glVertex2d(selection_area.end_x, selection_area.start_y);
+  glVertex2d(selection_area.end_x, selection_area.end_y);
+  glVertex2d(selection_area.start_x, selection_area.end_y);
+  glEnd();
+}
+
 Window::Window(const std::string& name, int width, int height) {
   SetupGLFW(width, height, name);
   SetupImGui();
@@ -17,8 +33,9 @@ Window::~Window() {
   glfwTerminate();
 }
 
-void Window::EndlessRender(const std::function<void()>& imgui_components,
-                           const std::function<void(int, int)>& on_render) {
+void Window::EndlessRender(
+    const std::function<void()>& imgui_components,
+    const std::function<void(const WindowInfo&)>& on_render) {
   while (glfwWindowShouldClose(window_) == 0) {
     glfwPollEvents();
 
@@ -35,9 +52,13 @@ void Window::EndlessRender(const std::function<void()>& imgui_components,
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    on_render(display_w, display_h);
+    on_render({display_w, display_h, selection_area});
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (selection_area.selecting) {
+      DrawRectangle();
+    }
 
     glfwSwapBuffers(window_);
   }
@@ -64,6 +85,36 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
     }
   };
   glfwSetKeyCallback(window_, key_callback);
+
+  const auto mouse_button_callback = [](GLFWwindow* window, int button,
+                                        int action, int /*mods*/) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+      if (action == GLFW_PRESS) {
+        double mouse_x{};
+        double mouse_y{};
+        glfwGetCursorPos(window, &mouse_x, &mouse_y);
+
+        selection_area.start_x = mouse_x;
+        selection_area.start_y = mouse_y;
+        selection_area.end_x = mouse_x;
+        selection_area.end_y = mouse_y;
+        selection_area.selecting = true;
+      } else if (action == GLFW_RELEASE) {
+        selection_area.selecting = false;
+      }
+    }
+  };
+  glfwSetMouseButtonCallback(window_, mouse_button_callback);
+
+  const auto cursor_pos_callback = [](GLFWwindow* /*window*/, double xpos,
+                                      double ypos) {
+    if (selection_area.selecting) {
+      selection_area.end_x = xpos;
+      selection_area.end_y = ypos;
+    }
+  };
+
+  glfwSetCursorPosCallback(window_, cursor_pos_callback);
 }
 
 void Window::SetupImGui() {

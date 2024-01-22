@@ -18,6 +18,7 @@ int main() {
   using mandelbrot_visualizer::ui::MenuState;
   using mandelbrot_visualizer::ui::Mode;
   using mandelbrot_visualizer::ui::Window;
+  using mandelbrot_visualizer::ui::WindowInfo;
   using std::make_unique;
 
   const auto start_size = 900;
@@ -36,9 +37,9 @@ int main() {
 
   // FIXME: replace with stack with mutex ... or something
   std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
-  const auto render_mandelbrot = [&](int display_w, int display_h) {
-    current_state.display_width = display_w;
-    current_state.display_height = display_h;
+  const auto render_mandelbrot = [&](const WindowInfo& window) {
+    current_state.display_width = window.width;
+    current_state.display_height = window.height;
 
     if (current_state.NeedsRecomputation(last_state)) {
       current_state.is_computing = true;
@@ -48,9 +49,9 @@ int main() {
           switch (current_state.mode) {
             case Mode::kSequential:
               return make_unique<SequentialMandelbrot>(
-                  display_h, display_w, current_state.base_color);
+                  window.height, window.width, current_state.base_color);
             case Mode::kOpenMP:
-              return make_unique<OpenMPMandelbrot>(display_h, display_w,
+              return make_unique<OpenMPMandelbrot>(window.height, window.width,
                                                    current_state.base_color);
             default:
               assert(false);
