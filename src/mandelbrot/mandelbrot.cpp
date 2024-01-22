@@ -27,7 +27,7 @@ ImVec4 Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
   const auto hue =
       (static_cast<float>(iterations) / static_cast<float>(max_iterations));
   ui::RGBColor rgb{};
-  ImGui::ColorConvertHSVtoRGB(hue, 1, iterations < max_iterations ? 0 : 1,
+  ImGui::ColorConvertHSVtoRGB(hue, 1, iterations < max_iterations ? 1 : 0,
                               rgb[0], rgb[1], rgb[2]);
 
   (void)base_color;

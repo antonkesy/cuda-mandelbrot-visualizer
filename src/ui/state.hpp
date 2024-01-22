@@ -19,7 +19,7 @@ struct VisualizerState {
   bool is_computing{};
   // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
   RGBColor base_color{21, 116, 211};  // blue
-  int max_iterations{1000};
+  int max_iterations{625};
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
   [[nodiscard]] bool NeedsRecomputation(const VisualizerState& other) const {
