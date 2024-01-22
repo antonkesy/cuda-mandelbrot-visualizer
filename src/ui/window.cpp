@@ -55,6 +55,7 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
   }
 
   glfwMakeContextCurrent(window_);
+  glfwSetWindowAspectRatio(window_, 1, 1);
 }
 
 void Window::SetupImGui() {
