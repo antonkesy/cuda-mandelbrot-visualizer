@@ -17,11 +17,22 @@ ImVec4 Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
 
   while (std::abs(z) <= 2 && iterations < max_iterations) {
     z = z * z + c;
-    iterations++;
+    ++iterations;
   }
 
-  float hue = static_cast<float>(iterations) / max_iterations;
-  return ImVec4(hue, base_color[0], base_color[1], base_color[2]);
+  const auto hue = (static_cast<float>(iterations) / max_iterations);
+  ui::RGBColor rgb{};
+  ImGui::ColorConvertHSVtoRGB(hue, 1, iterations < max_iterations ? 0 : 1,
+                              rgb[0], rgb[1], rgb[2]);
+
+  (void)base_color;
+  // FIXME: enable base color again
+  //  const auto add_base_color = [](float color, float hue) {
+  //    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+  //    return std::clamp(0.0F, (color / 255), 1.0F);
+  //    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
+  //  };
+  return {rgb[0], rgb[1], rgb[2], 1.0F};
 }
 
 }  // namespace mandelbrot_visualizer
