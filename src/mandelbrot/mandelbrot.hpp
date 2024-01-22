@@ -26,6 +26,9 @@ class Mandelbrot {
   Mandelbrot &operator=(const Mandelbrot &) = delete;
   Mandelbrot &operator=(Mandelbrot &&) = delete;
 
+  // TODO(ak): make this a parameter
+  static constexpr int kMaxIterations = 1000;
+
   // not best desing -> can be forgotten to call ...
   virtual void Compute(const std::atomic<bool> &request_stop) = 0;
   virtual void Draw() = 0;
@@ -33,6 +36,8 @@ class Mandelbrot {
   [[nodiscard]] std::complex<double> PixelToComplex(int x, int y) const;
 
   [[nodiscard]] ImVec4 MandelbrotColor(const std::complex<double> &c) const;
+
+  [[nodiscard]] static int Iteration(const std::complex<double> &c);
 
  protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
