@@ -56,6 +56,14 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
 
   glfwMakeContextCurrent(window_);
   glfwSetWindowAspectRatio(window_, 1, 1);
+
+  const auto key_callback = [](GLFWwindow* window, int key, int /*scancode*/,
+                               int action, int /*mods*/) {
+    if ((key == GLFW_KEY_ESCAPE || key == GLFW_KEY_Q) && action == GLFW_PRESS) {
+      glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+  };
+  glfwSetKeyCallback(window_, key_callback);
 }
 
 void Window::SetupImGui() {
