@@ -36,13 +36,17 @@ int main() {
   };
 
   // FIXME: replace with stack with mutex ... or something
+  std::atomic<bool> request_stop{false};
+
   std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
   const auto render_mandelbrot = [&](const WindowInfo& window) {
     current_state.display_width = window.width;
     current_state.display_height = window.height;
 
-    if (current_state.NeedsRecomputation(last_state)) {
-      current_state.is_computing = true;
+    if (current_state.NeedsRecomputation(last_state) ||
+        (mandelbrot == nullptr && results.empty())) {
+      mandelbrot = nullptr;
+      request_stop = true;
 
       const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
         auto next = [&]() -> std::unique_ptr<Mandelbrot> {
@@ -58,14 +62,18 @@ int main() {
           }
         }();
 
+        request_stop = false;
+        current_state.is_computing = true;
         current_state.compute_time =
-            Stopwatch::Time([&]() { next->Compute(); });
-        using namespace std::chrono_literals;
+            Stopwatch::Time([&]() { next->Compute(request_stop); });
+        current_state.is_computing = false;
         return next;
       };
 
       results.emplace_back(std::async(std::launch::async, compute));
     }
+
+    request_stop = results.size() > 1;
 
     if (!results.empty()) {
       auto& result = results.back();
@@ -77,16 +85,16 @@ int main() {
             break;
           case std::future_status::ready:
             mandelbrot = result.get();
+            // invalidate computation if there are more futures available
+            if (results.size() > 1) mandelbrot = nullptr;
             results.clear();
-            current_state.is_computing = false;
             break;
         }
       }
     }
 
     current_state.draw_time = Stopwatch::Time([&]() {
-      if (!current_state.is_computing && mandelbrot != nullptr)
-        mandelbrot->Draw();
+      if (mandelbrot != nullptr) mandelbrot->Draw();
     });
 
     last_state = current_state;

@@ -10,9 +10,10 @@ class SequentialMandelbrot : public Mandelbrot {
                        ui::RGBColor base_color)
       : Mandelbrot(height, width, base_color) {}
 
-  void Compute() override {
+  void Compute(const std::atomic<bool> &request_stop) override {
     for (int y = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x) {
+        if (request_stop) return;
         std::complex<double> c = PixelToComplex(x, y);
         pixels[y * width + x] = MandelbrotColor(c);
       }

@@ -5,6 +5,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include <atomic>
 #include <complex>
 #include <vector>
 
@@ -26,7 +27,7 @@ class Mandelbrot {
   Mandelbrot &operator=(Mandelbrot &&) = delete;
 
   // not best desing -> can be forgotten to call ...
-  virtual void Compute() = 0;
+  virtual void Compute(const std::atomic<bool> &request_stop) = 0;
   virtual void Draw() = 0;
 
   [[nodiscard]] std::complex<double> PixelToComplex(int x, int y) const;
