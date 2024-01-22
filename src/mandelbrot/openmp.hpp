@@ -21,10 +21,10 @@ class OpenMPMandelbrot : public Mandelbrot {
 #pragma omp parallel shared(pixels, request_stop) default(none)
 #pragma omp for schedule(dynamic)
     for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        if (request_stop) {
+      if (request_stop) {
 #pragma omp cancel for
-        }
+      }
+      for (int x = 0; x < width; ++x) {
         std::complex<double> c = PixelToComplex(x, y);
         pixels[y * width + x] = MandelbrotColor(c);
       }

@@ -26,6 +26,9 @@ WORKDIR /mandelbrot_visualizer/build
 RUN cmake ..
 RUN cmake --build .
 
+# OpenMP
+ENV OMP_CANCELLATION=true
+
 # --------------------------------
 
 FROM base as ci

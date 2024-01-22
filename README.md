@@ -51,6 +51,7 @@ cmake --build .
 #### Execution
 
 ```
+export OMP_CANCELLATION=true # enable OpenMP cancellation for redrawing
 ./mandelbrot_visualizer
 ```
 
