@@ -1,3 +1,4 @@
+#include <future>
 #include <memory>
 
 #include "mandelbrot/mandelbrot.hpp"
@@ -23,40 +24,63 @@ int main() {
   const auto start_height = 900;
   Window window("Mandelbrot Visualizer", start_width, start_height);
 
-  std::unique_ptr<Mandelbrot> mandelbrot =
-      std::make_unique<SequentialMandelbrot>(0, 0);
+  std::unique_ptr<Mandelbrot> mandelbrot = nullptr;
 
   MenuState current_state = {Mode::kSequential, {}, {}, 0};
   MenuState last_state = current_state;
 
   const auto menu = [&]() { current_state.mode = Menu::ShowMenu(last_state); };
+
+  // FIXME: replace with stack with mutex ... or something
+  std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
   const auto render_mandelbrot = [&](int display_w, int display_h) {
     current_state.display_width = display_w;
     current_state.display_height = display_h;
 
     if (current_state.NeedsRecomputation(last_state)) {
-      // TODO(ak): calculate in background -> dont block UI
-      mandelbrot = [&]() -> std::unique_ptr<Mandelbrot> {
-        switch (current_state.mode) {
-          case Mode::kSequential:
-            return make_unique<SequentialMandelbrot>(display_h, display_w);
-          case Mode::kOpenMP:
-            return make_unique<OpenMPMandelbrot>(display_h, display_w);
-          default:
-            assert(false);
-        }
-      }();
-
       current_state.is_computing = true;
-      current_state.compute_time =
-          Stopwatch::Time([&]() { mandelbrot->Compute(); });
-      current_state.is_computing = false;
+
+      const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
+        auto next = [&]() -> std::unique_ptr<Mandelbrot> {
+          switch (current_state.mode) {
+            case Mode::kSequential:
+              return make_unique<SequentialMandelbrot>(display_h, display_w);
+            case Mode::kOpenMP:
+              return make_unique<OpenMPMandelbrot>(display_h, display_w);
+            default:
+              assert(false);
+          }
+        }();
+
+        current_state.compute_time =
+            Stopwatch::Time([&]() { next->Compute(); });
+        using namespace std::chrono_literals;
+        return next;
+      };
+
+      results.emplace_back(std::async(std::launch::async, compute));
+    }
+
+    if (!results.empty()) {
+      auto& result = results.back();
+      if (result.valid()) {
+        using namespace std::chrono_literals;
+        switch (std::future_status status = result.wait_for(1ms); status) {
+          case std::future_status::deferred:
+          case std::future_status::timeout:
+            break;
+          case std::future_status::ready:
+            mandelbrot = result.get();
+            results.clear();
+            current_state.is_computing = false;
+            break;
+        }
+      }
     }
 
     current_state.draw_time = Stopwatch::Time([&]() {
-      if (!current_state.is_computing) {
+      if (!current_state.is_computing && mandelbrot != nullptr)
         mandelbrot->Draw();
-      }
     });
 
     last_state = current_state;
