@@ -6,8 +6,8 @@ namespace mandelbrot_visualizer {
 
 class OpenMPMandelbrot : public Mandelbrot {
  public:
-  OpenMPMandelbrot(const int height, const int width)
-      : Mandelbrot(height, width) {}
+  OpenMPMandelbrot(const int height, const int width, ui::RGBColor base_color)
+      : Mandelbrot(height, width, base_color) {}
 
   void Compute() override {
 #pragma omp parallel shared(pixels) default(none)

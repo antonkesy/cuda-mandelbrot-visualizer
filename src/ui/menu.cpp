@@ -5,16 +5,17 @@
 
 namespace mandelbrot_visualizer::ui {
 
-Mode Menu::ShowMenu(const MenuState& state) {
+MenuValues Menu::ShowMenu(const MenuState& state) {
   ImGui::NewFrame();
   ImGui::Begin("Render Settings");
   const auto mode = ModeCombo(state.mode);
   WindowInfo(state);
   DurationInfo(state);
   FpsInfo();
-
+  auto color = state.base_color;
+  SetColor(color);
   ImGui::End();
-  return mode;
+  return {mode, color};
 }
 
 Mode Menu::ModeCombo(const Mode current) {
@@ -53,6 +54,10 @@ void Menu::DurationInfo(const MenuState& state) {
 void Menu::WindowInfo(const MenuState& state) {
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Window Size: %ix%i", state.display_width, state.display_height);
+}
+
+void Menu::SetColor(RGBColor& current) {
+  ImGui::ColorEdit3("Base Color", current.data());
 }
 
 }  // namespace mandelbrot_visualizer::ui

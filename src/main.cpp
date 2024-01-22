@@ -20,16 +20,19 @@ int main() {
   using mandelbrot_visualizer::ui::Window;
   using std::make_unique;
 
-  const auto start_width = 1200;
-  const auto start_height = 900;
-  Window window("Mandelbrot Visualizer", start_width, start_height);
+  const auto start_size = 900;
+  Window window("Mandelbrot Visualizer", start_size, start_size);
 
   std::unique_ptr<Mandelbrot> mandelbrot = nullptr;
 
-  MenuState current_state = {Mode::kSequential, {}, {}, 0};
+  MenuState current_state;
   MenuState last_state = current_state;
 
-  const auto menu = [&]() { current_state.mode = Menu::ShowMenu(last_state); };
+  const auto menu = [&]() {
+    const auto [mode, color] = Menu::ShowMenu(current_state);
+    current_state.mode = mode;
+    current_state.base_color = color;
+  };
 
   // FIXME: replace with stack with mutex ... or something
   std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
@@ -44,9 +47,11 @@ int main() {
         auto next = [&]() -> std::unique_ptr<Mandelbrot> {
           switch (current_state.mode) {
             case Mode::kSequential:
-              return make_unique<SequentialMandelbrot>(display_h, display_w);
+              return make_unique<SequentialMandelbrot>(
+                  display_h, display_w, current_state.base_color);
             case Mode::kOpenMP:
-              return make_unique<OpenMPMandelbrot>(display_h, display_w);
+              return make_unique<OpenMPMandelbrot>(display_h, display_w,
+                                                   current_state.base_color);
             default:
               assert(false);
           }

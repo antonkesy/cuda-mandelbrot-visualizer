@@ -6,8 +6,9 @@ namespace mandelbrot_visualizer {
 
 class SequentialMandelbrot : public Mandelbrot {
  public:
-  SequentialMandelbrot(const int height, const int width)
-      : Mandelbrot(height, width) {}
+  SequentialMandelbrot(const int height, const int width,
+                       ui::RGBColor base_color)
+      : Mandelbrot(height, width, base_color) {}
 
   void Compute() override {
     for (int y = 0; y < height; ++y) {

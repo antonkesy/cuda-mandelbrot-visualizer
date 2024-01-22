@@ -8,12 +8,17 @@
 #include <complex>
 #include <vector>
 
+#include "../ui/state.hpp"
+
 namespace mandelbrot_visualizer {
 
 class Mandelbrot {
  public:
-  Mandelbrot(const int height, const int width)
-      : height(height), width(width), pixels(height * width) {}
+  Mandelbrot(const int height, const int width, const ui::RGBColor &base_color)
+      : height(height),
+        width(width),
+        pixels(height * width),
+        base_color(base_color) {}
   virtual ~Mandelbrot() = default;
   Mandelbrot(const Mandelbrot &) = default;
   Mandelbrot(Mandelbrot &&) = default;
@@ -26,10 +31,11 @@ class Mandelbrot {
 
   [[nodiscard]] std::complex<double> PixelToComplex(int x, int y) const;
 
-  [[nodiscard]] static ImVec4 MandelbrotColor(const std::complex<double> &c);
+  [[nodiscard]] ImVec4 MandelbrotColor(const std::complex<double> &c) const;
 
  protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
+  ui::RGBColor base_color{};
   const int height;
   const int width;
   std::vector<ImVec4> pixels;
