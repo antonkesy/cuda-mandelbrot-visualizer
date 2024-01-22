@@ -1,14 +1,19 @@
 # Mandelbrot Visualizer
 
+![Screenshot](./docs/screenshot.png)
+
 ## Used Features and Libs?
 
 - ImGUI
 - OpenGL
 - GLFW
 - OpenMP
-- Futures
+- C++ Futures
 - Docker
 - clang-format/tidy
+- fmt
+- cmake
+<!-- - Cuda -->
 - ...?
 
 ## Build and Execution
@@ -33,9 +38,10 @@ docker compose run --rm mandelbrot_visualizer
 ## Dependencies
 
 - OpenGL
-- Cuda
+<!-- - Cuda -->
 - CMake
 - C++11
+- OpenMP
 
 _See docker container for Ubuntu/Debian install steps_
 
