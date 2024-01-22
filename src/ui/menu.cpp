@@ -1,5 +1,7 @@
 #include "menu.hpp"
 
+#include <fmt/core.h>
+
 #include <string>
 #include <vector>
 
@@ -48,11 +50,12 @@ void Menu::FpsInfo() {
 }
 
 void Menu::DurationInfo(VisualizerState& state) {
+  const auto text =
+      fmt::format("Compute Progress: {:.1f}/100", *state.progress * 100);
+  ImGui::ProgressBar(*state.progress, ImVec2(-1, 0), text.c_str());
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Compute Time: %.1lims, Draw Time: %.1lims", state.compute_time.count(),
       state.draw_time.count());
-  // TODO(ak): add progress bar + progress from mandel
-  // ImGui::ProgressBar(0, ImVec2(-1, 0));
 }
 
 void Menu::WindowInfo(VisualizerState& state) {

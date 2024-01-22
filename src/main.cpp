@@ -45,9 +45,9 @@ int main() {
       request_stop = true;
 
       const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
-        Mandelbrot::Settings settings{window.height, window.width,
-                                      current_state.base_color,
-                                      current_state.max_iterations};
+        Mandelbrot::Settings settings{
+            window.height, window.width, current_state.base_color,
+            current_state.max_iterations, current_state.progress};
         auto next = [&]() -> std::unique_ptr<Mandelbrot> {
           switch (current_state.mode) {
             case Mode::kSequential:

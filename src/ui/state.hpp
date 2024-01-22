@@ -2,8 +2,10 @@
 
 #include <array>
 #include <chrono>
+#include <memory>
 
 #include "mode.hpp"
+
 namespace mandelbrot_visualizer::ui {
 
 using std::chrono::milliseconds;
@@ -21,6 +23,7 @@ struct VisualizerState {
   RGBColor base_color{21, 116, 211};  // blue
   int max_iterations{625};
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
+  std::shared_ptr<float> progress = std::make_unique<float>(0.0F);  //[0,1]
 
   [[nodiscard]] bool NeedsRecomputation(const VisualizerState& other) const {
     return mode != other.mode || display_width != other.display_width ||

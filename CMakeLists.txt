@@ -7,6 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(OpenGL REQUIRED)
 find_package(OpenMP REQUIRED)
 
+add_subdirectory(external/fmt)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glew-cmake)
 
@@ -26,7 +27,7 @@ set(SOURCE_FILES
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} glfw libglew_static OpenGL::GL
-                      OpenMP::OpenMP_CXX)
+                      OpenMP::OpenMP_CXX fmt::fmt)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${IMGUI_PATH}
                                                    ${IMGUI_PATH}/backends)

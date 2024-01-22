@@ -10,13 +10,16 @@ class SequentialMandelbrot : public Mandelbrot {
       : Mandelbrot(settings) {}
 
   void Compute(const std::atomic<bool>& request_stop) override {
+    *progress = 0;
     for (int y = 0; y < height; ++y) {
+      *progress = static_cast<float>(y) / static_cast<float>(height);
       for (int x = 0; x < width; ++x) {
         if (request_stop) return;
         std::complex<double> c = PixelToComplex(x, y);
         pixels[y * width + x] = MandelbrotColor(c);
       }
     }
+    *progress = 1;
   }
 
   void Draw() override {

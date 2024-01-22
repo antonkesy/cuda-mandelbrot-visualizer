@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <complex>
+#include <memory>
 #include <vector>
 
 #include "../ui/state.hpp"
@@ -20,6 +21,7 @@ class Mandelbrot {
     int width;
     ui::RGBColor base_color;
     int max_iterations;
+    std::shared_ptr<float> progress;
   };
 
   explicit Mandelbrot(const Settings &settings)
@@ -27,7 +29,8 @@ class Mandelbrot {
         width(settings.width),
         pixels(height * width),
         base_color(settings.base_color),
-        max_iterations(settings.max_iterations) {}
+        max_iterations(settings.max_iterations),
+        progress(settings.progress) {}
   virtual ~Mandelbrot() = default;
   Mandelbrot(const Mandelbrot &) = default;
   Mandelbrot(Mandelbrot &&) = default;
@@ -51,6 +54,7 @@ class Mandelbrot {
   const int width;
   std::vector<ImVec4> pixels;
   const int max_iterations;
+  std::shared_ptr<float> progress;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
 };
 
