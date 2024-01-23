@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include <future>
 #include <memory>
 
@@ -9,7 +11,11 @@
 #include "ui/window.hpp"
 #include "utility/stopwatch.hpp"
 
-int main() {
+void BootstrapOmpCancel(int argc, char** argv);
+
+int main(int argc, char** argv) {
+  BootstrapOmpCancel(argc, argv);
+
   using mandelbrot_visualizer::Mandelbrot;
   using mandelbrot_visualizer::OpenMPMandelbrot;
   using mandelbrot_visualizer::SequentialMandelbrot;
@@ -100,4 +106,19 @@ int main() {
   window.EndlessRender(menu, render_mandelbrot);
 
   return 0;
+}
+
+void BootstrapOmpCancel(int /*argc*/, char** argv) {
+  // NOLINTBEGIN(concurrency-mt-unsafe)
+  if (getenv("OMP_CANCELLATION") == nullptr) {
+    std::cout << "Bootstrapping 'OMP_CANCELLATION=true'\n";
+    setenv("OMP_CANCELLATION", "true", 1);
+    // Restart the program with the new environment variable
+    int output = execvp(
+        argv[0],  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        argv);
+    // Execution should not continue past here
+    std::cerr << "Bootstrapping failed with code " << output << "\n";
+    exit(1);
+  }  // NOLINTEND(concurrency-mt-unsafe)
 }
