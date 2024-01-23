@@ -6,22 +6,28 @@
 #include <imgui_impl_opengl3.h>
 
 #include <functional>
+#include <optional>
 #include <string>
 
 namespace mandelbrot_visualizer::ui {
 
 struct SelectionArea {
-  double start_x{};
-  double start_y{};
-  double end_x{};
-  double end_y{};
+  int start_x{};
+  int start_y{};
+  int end_x{};
+  int end_y{};
+};
+
+struct Selection {
+  SelectionArea area{};
+  bool has_selected{};
   bool selecting{};
 };
 
 struct WindowInfo {
   int width{};
   int height{};
-  SelectionArea mouse_selection;
+  std::optional<SelectionArea> mouse_selection;
 };
 
 class Window {

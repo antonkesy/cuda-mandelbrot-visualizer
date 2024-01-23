@@ -27,7 +27,7 @@ class OpenMPMandelbrot : public Mandelbrot {
 #pragma omp cancel for
       }
       for (int x = 0; x < width; ++x) {
-        std::complex<double> c = PixelToComplex(x, y);
+        std::complex<double> c = PixelToComplex(x, y, width, height, area);
         pixels[y * width + x] = MandelbrotColor(c);
       }
     }

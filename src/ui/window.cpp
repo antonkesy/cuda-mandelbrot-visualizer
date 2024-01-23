@@ -5,7 +5,7 @@
 namespace mandelbrot_visualizer::ui {
 
 // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-SelectionArea selection_area{};
+Selection selection_area{};
 
 void DrawRectangle() {
   // FIXME: lines not visible
@@ -13,10 +13,10 @@ void DrawRectangle() {
   glLineWidth(300.0F);
   glBegin(GL_QUADS);
   glColor3f(0.0F, 0.0F, 0.0F);
-  glVertex2d(selection_area.start_x, selection_area.start_y);
-  glVertex2d(selection_area.end_x, selection_area.start_y);
-  glVertex2d(selection_area.end_x, selection_area.end_y);
-  glVertex2d(selection_area.start_x, selection_area.end_y);
+  glVertex2d(selection_area.area.start_x, selection_area.area.start_y);
+  glVertex2d(selection_area.area.end_x, selection_area.area.start_y);
+  glVertex2d(selection_area.area.end_x, selection_area.area.end_y);
+  glVertex2d(selection_area.area.start_x, selection_area.area.end_y);
   glEnd();
 }
 
@@ -52,7 +52,12 @@ void Window::EndlessRender(
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    on_render({display_w, display_h, selection_area});
+    on_render({display_w, display_h,
+               selection_area.has_selected
+                   ? std::make_optional(selection_area.area)
+                   : std::nullopt});
+
+    selection_area.has_selected = false;
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -94,13 +99,15 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
         double mouse_y{};
         glfwGetCursorPos(window, &mouse_x, &mouse_y);
 
-        selection_area.start_x = mouse_x;
-        selection_area.start_y = mouse_y;
-        selection_area.end_x = mouse_x;
-        selection_area.end_y = mouse_y;
+        selection_area.area.start_x = static_cast<int>(mouse_x);
+        selection_area.area.start_y = static_cast<int>(mouse_y);
+        selection_area.area.end_x = static_cast<int>(mouse_x);
+        selection_area.area.end_y = static_cast<int>(mouse_y);
         selection_area.selecting = true;
+        selection_area.has_selected = false;
       } else if (action == GLFW_RELEASE) {
         selection_area.selecting = false;
+        selection_area.has_selected = true;
       }
     }
   };
@@ -109,8 +116,8 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
   const auto cursor_pos_callback = [](GLFWwindow* /*window*/, double xpos,
                                       double ypos) {
     if (selection_area.selecting) {
-      selection_area.end_x = xpos;
-      selection_area.end_y = ypos;
+      selection_area.area.end_x = static_cast<int>(xpos);
+      selection_area.area.end_y = static_cast<int>(ypos);
     }
   };
 

@@ -10,27 +10,20 @@
 #include <memory>
 #include <vector>
 
-#include "../ui/state.hpp"
+#include "settings.hpp"
 
 namespace mandelbrot_visualizer {
 
 class Mandelbrot {
  public:
-  struct Settings {
-    int height;
-    int width;
-    ui::RGBColor base_color;
-    int max_iterations;
-    std::shared_ptr<float> progress;
-  };
-
   explicit Mandelbrot(const Settings &settings)
       : height(settings.height),
         width(settings.width),
         pixels(height * width),
         base_color(settings.base_color),
         max_iterations(settings.max_iterations),
-        progress(settings.progress) {}
+        progress(settings.progress),
+        area(settings.area) {}
   virtual ~Mandelbrot() = default;
   Mandelbrot(const Mandelbrot &) = default;
   Mandelbrot(Mandelbrot &&) = default;
@@ -41,7 +34,10 @@ class Mandelbrot {
   virtual void Compute(const std::atomic<bool> &request_stop) = 0;
   virtual void Draw() = 0;
 
-  [[nodiscard]] std::complex<double> PixelToComplex(int x, int y) const;
+  [[nodiscard]] static std::complex<double> PixelToComplex(int x, int y,
+                                                           int width,
+                                                           int height,
+                                                           Settings::Area area);
 
   [[nodiscard]] ImVec4 MandelbrotColor(const std::complex<double> &c) const;
 
@@ -54,7 +50,8 @@ class Mandelbrot {
   const int width;
   std::vector<ImVec4> pixels;
   const int max_iterations;
-  std::shared_ptr<float> progress;
+  const std::shared_ptr<float> progress;
+  const Settings::Area area;
   // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
 };
 

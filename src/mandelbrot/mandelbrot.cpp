@@ -2,12 +2,17 @@
 
 namespace mandelbrot_visualizer {
 
-std::complex<double> Mandelbrot::PixelToComplex(int x, int y) const {
-  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
-  double real = (x - width / 2.0) * 4.0 / width;
-  double imag = (y - height / 2.0) * 4.0 / height;
-  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
-  return {real, imag};
+std::complex<double> Mandelbrot::PixelToComplex(int x, int y, int width,
+                                                int height,
+                                                Settings::Area area) {
+  const double c_real =
+      static_cast<double>(x) / width * (area.end.real() - area.start.real()) +
+      area.start.real();
+  const double c_img = (static_cast<double>(height) - y) / height *
+                           (area.start.imag() - area.end.imag()) +
+                       area.end.imag();
+
+  return {c_real, c_img};
 }
 
 int Mandelbrot::Iteration(const std::complex<double> &c) const {

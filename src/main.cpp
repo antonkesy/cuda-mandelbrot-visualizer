@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
   using mandelbrot_visualizer::Mandelbrot;
   using mandelbrot_visualizer::OpenMPMandelbrot;
   using mandelbrot_visualizer::SequentialMandelbrot;
+  using mandelbrot_visualizer::Settings;
   using mandelbrot_visualizer::Stopwatch;
   using mandelbrot_visualizer::ui::Menu;
   using mandelbrot_visualizer::ui::Mode;
@@ -45,15 +46,31 @@ int main(int argc, char** argv) {
     current_state.display_width = window.width;
     current_state.display_height = window.height;
 
+    if (mandelbrot != nullptr && window.mouse_selection.has_value()) {
+      const auto selection = window.mouse_selection;
+      const auto before = current_state.area;
+      current_state.area.start =
+          Mandelbrot::PixelToComplex(selection->start_x, selection->end_x,
+                                     window.width, window.height, before);
+      current_state.area.end =
+          Mandelbrot::PixelToComplex(selection->start_y, selection->end_y,
+                                     window.width, window.height, before);
+    }
+
     if (current_state.NeedsRecomputation(last_state) ||
         (mandelbrot == nullptr && results.empty())) {
       mandelbrot = nullptr;
       request_stop = true;
 
       const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
-        Mandelbrot::Settings settings{
-            window.height, window.width, current_state.base_color,
-            current_state.max_iterations, current_state.progress};
+        Settings settings{
+            window.height,
+            window.width,
+            current_state.base_color,
+            current_state.max_iterations,
+            current_state.progress,
+            current_state.area,
+        };
         auto next = [&]() -> std::unique_ptr<Mandelbrot> {
           switch (current_state.mode) {
             case Mode::kSequential:
@@ -99,7 +116,6 @@ int main(int argc, char** argv) {
     current_state.draw_time = Stopwatch::Time([&]() {
       if (mandelbrot != nullptr) mandelbrot->Draw();
     });
-
     last_state = current_state;
   };
 
