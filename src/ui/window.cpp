@@ -4,8 +4,10 @@
 
 namespace mandelbrot_visualizer::ui {
 
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
 Selection selection_area{};
+bool reset_area{};
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 void DrawRectangle() {
   // FIXME: lines not visible
@@ -52,10 +54,12 @@ void Window::EndlessRender(
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    on_render({display_w, display_h,
-               selection_area.has_selected
-                   ? std::make_optional(selection_area.area)
-                   : std::nullopt});
+    // TOOD(ak): check if selection area is bigger than few pixels
+    on_render(
+        {display_w, display_h,
+         (selection_area.has_selected ? std::make_optional(selection_area.area)
+                                      : std::nullopt),
+         reset_area});
 
     selection_area.has_selected = false;
 
@@ -66,6 +70,8 @@ void Window::EndlessRender(
     }
 
     glfwSwapBuffers(window_);
+
+    reset_area = false;
   }
 }
 
@@ -87,6 +93,9 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
                                int action, int /*mods*/) {
     if ((key == GLFW_KEY_ESCAPE || key == GLFW_KEY_Q) && action == GLFW_PRESS) {
       glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+      reset_area = true;
     }
   };
   glfwSetKeyCallback(window_, key_callback);

@@ -57,6 +57,10 @@ int main(int argc, char** argv) {
                                      window.width, window.height, before);
     }
 
+    if (window.reset_area) {
+      current_state.area = Settings::Area{};
+    }
+
     if (current_state.NeedsRecomputation(last_state) ||
         (mandelbrot == nullptr && results.empty())) {
       mandelbrot = nullptr;

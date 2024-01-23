@@ -28,6 +28,7 @@ struct WindowInfo {
   int width{};
   int height{};
   std::optional<SelectionArea> mouse_selection;
+  bool reset_area{};
 };
 
 class Window {

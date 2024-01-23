@@ -75,6 +75,6 @@ void Menu::SetMaxIterations(int& current) {
 
 void Menu::InteractionInfo() {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
-  ImGui::Text("Quit: <ESC>/q\nZoom: Select area with mouse");
+  ImGui::Text("Quit: <ESC>/<Q>\nZoom: Select area with mouse\nReset: <R>");
 }
 }  // namespace mandelbrot_visualizer::ui

@@ -22,7 +22,7 @@ struct VisualizerState {
   RGBColor base_color{21, 116, 211};  // blue
   int max_iterations{625};
   std::shared_ptr<float> progress = std::make_unique<float>(0.0F);  //[0,1]
-  mandelbrot_visualizer::Settings::Area area{{-2.0F, -1.0F}, {1.0F, 1.0F}};
+  mandelbrot_visualizer::Settings::Area area;
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 
   [[nodiscard]] bool NeedsRecomputation(const VisualizerState& other) const {
