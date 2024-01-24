@@ -49,6 +49,9 @@ int main(int argc, char** argv) {
     if (mandelbrot != nullptr && window.mouse_selection.has_value()) {
       const auto selection = window.mouse_selection;
       const auto before = current_state.area;
+      // FIXME: lower value should be start, higher value should be end
+      // FIXME: expand selection to have same aspect ratio as window -> remove
+      // square constraint
       current_state.area.start =
           Mandelbrot::PixelToComplex(selection->start_x, selection->end_x,
                                      window.width, window.height, before);
