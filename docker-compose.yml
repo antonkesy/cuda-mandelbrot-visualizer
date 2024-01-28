@@ -9,6 +9,22 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - DISPLAY=${DISPLAY}
+    command: ["./build/mandelbrot_visualizer"]
+
+    build:
+      context: .
+      tags:
+        - base
+      dockerfile: Dockerfile
+
+  nvidia_mandelbrot_visualizer:
+    image: mandelbrot_visualizer
+    privileged: true
+    network_mode: host
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DISPLAY=${DISPLAY}
       - NVIDIA_DRIVER_CAPABILITIES=all
       - NVIDIA_VISIBLE_DEVICES=all
     command: ["./build/mandelbrot_visualizer"]

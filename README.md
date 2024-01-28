@@ -21,17 +21,13 @@
 
 ### Docker
 
-build:
-
-```
-docker compose build mandelbrot_visualizer
-```
-
 run with xorg:
 
 ```
 xhost +local:docker || true
 docker compose run --rm mandelbrot_visualizer
+<OR>
+docker compose run --rm nvidia_mandelbrot_visualizer
 ```
 
 ### Natively
