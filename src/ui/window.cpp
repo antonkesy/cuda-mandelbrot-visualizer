@@ -5,20 +5,31 @@
 namespace mandelbrot_visualizer::ui {
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
+int display_w{};
+int display_h{};
 Selection selection_area{};
 bool reset_area{};
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 void DrawRectangle() {
-  // FIXME: lines not visible
-  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
-  glLineWidth(300.0F);
   glBegin(GL_QUADS);
-  glColor3f(0.0F, 0.0F, 0.0F);
-  glVertex2d(selection_area.area.start_x, selection_area.area.start_y);
-  glVertex2d(selection_area.area.end_x, selection_area.area.start_y);
-  glVertex2d(selection_area.area.end_x, selection_area.area.end_y);
-  glVertex2d(selection_area.area.start_x, selection_area.area.end_y);
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
+  glColor4f(1.0F, 1.0F, 1.0F, 0.5F);  // RGBA color with alpha (transparency)
+  float x0 = -1.0F + 2.0F * (static_cast<float>(selection_area.area.start_x) /
+                             static_cast<float>(display_w));
+  float x1 = -1.0F + 2.0F * (static_cast<float>(selection_area.area.end_x) /
+                             static_cast<float>(display_w));
+  float y0 = 1.0F - 2.0F * (static_cast<float>(selection_area.area.start_y) /
+                            static_cast<float>(display_h));
+  float y1 = 1.0F - 2.0F * (static_cast<float>(selection_area.area.end_y) /
+                            static_cast<float>(display_h));
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
+
+  glVertex2f(x0, y0);
+  glVertex2f(x1, y0);
+  glVertex2f(x1, y1);
+  glVertex2f(x0, y1);
+
   glEnd();
 }
 
@@ -47,8 +58,6 @@ void Window::EndlessRender(
     imgui_components();
 
     ImGui::Render();
-    int display_w{};
-    int display_h{};
     glfwGetFramebufferSize(window_, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     glClearColor(0.0F, 0.0F, 0.0F, 1.0F);
@@ -88,6 +97,10 @@ void Window::SetupGLFW(int width, int height, const std::string& name) {
 
   glfwMakeContextCurrent(window_);
   glfwSetWindowAspectRatio(window_, 1, 1);
+
+  // Enable transparency
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   const auto key_callback = [](GLFWwindow* window, int key, int /*scancode*/,
                                int action, int /*mods*/) {

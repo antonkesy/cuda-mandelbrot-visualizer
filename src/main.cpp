@@ -49,15 +49,19 @@ int main(int argc, char** argv) {
     if (mandelbrot != nullptr && window.mouse_selection.has_value()) {
       const auto selection = window.mouse_selection;
       const auto before = current_state.area;
-      // FIXME: lower value should be start, higher value should be end
-      // FIXME: expand selection to have same aspect ratio as window -> remove
       // square constraint
-      current_state.area.start =
-          Mandelbrot::PixelToComplex(selection->start_x, selection->end_x,
-                                     window.width, window.height, before);
-      current_state.area.end =
-          Mandelbrot::PixelToComplex(selection->start_y, selection->end_y,
-                                     window.width, window.height, before);
+      const auto start_x = std::min(selection->start_x, selection->end_x);
+      const auto start_y = std::min(selection->start_y, selection->end_y);
+      const auto size = std::max(selection->end_x - selection->start_x,
+                                 selection->end_y - selection->start_y);
+      // ignore small selections (probably just a UI click)
+      constexpr auto kMinSelectionSize = 10;
+      if (size > kMinSelectionSize) {
+        current_state.area.start = Mandelbrot::PixelToComplex(
+            start_x, start_x + size, window.width, window.height, before);
+        current_state.area.end = Mandelbrot::PixelToComplex(
+            start_y, start_y + size, window.width, window.height, before);
+      }
     }
 
     if (window.reset_area) {
