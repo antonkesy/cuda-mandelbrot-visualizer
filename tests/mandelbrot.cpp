@@ -15,7 +15,7 @@ auto TestSettings() {
 }
 
 // NOLINTNEXTLINE(cert-err58-cpp,cppcoreguidelines-avoid-non-const-global-variables,cppcoreguidelines-owning-memory)
-TEST(MandelbrotTest, Oracle) {
+TEST(Oracle, OpenMP) {
   using mandelbrot_visualizer::OpenMPMandelbrot;
   using mandelbrot_visualizer::SequentialMandelbrot;
 

@@ -19,11 +19,11 @@ class OpenMPMandelbrot : public Mandelbrot {
 
   std::optional<MandelbrotData> Compute(
       const std::atomic<bool> &request_stop) override {
-    *progress = 0;
+    if (progress != nullptr) *progress = 0;
 #pragma omp parallel shared(pixels, request_stop) default(none)
 #pragma omp for schedule(dynamic)
     for (int y = 0; y < height; ++y) {
-      if (progress)
+      if (progress != nullptr)
         *progress = static_cast<float>(y) / static_cast<float>(height);
       if (request_stop) {
 #pragma omp cancel for
@@ -36,7 +36,7 @@ class OpenMPMandelbrot : public Mandelbrot {
     if (request_stop) {
       return std::nullopt;
     }
-    if (progress) *progress = 1;
+    if (progress != nullptr) *progress = 1;
 
     return std::make_optional<MandelbrotData>({height, width, pixels});
   }

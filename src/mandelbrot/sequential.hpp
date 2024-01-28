@@ -13,7 +13,8 @@ class SequentialMandelbrot : public Mandelbrot {
       const std::atomic<bool>& request_stop) override {
     if (progress) *progress = 0;
     for (int y = 0; y < height; ++y) {
-      *progress = static_cast<float>(y) / static_cast<float>(height);
+      if (progress)
+        *progress = static_cast<float>(y) / static_cast<float>(height);
       for (int x = 0; x < width; ++x) {
         if (request_stop) return std::nullopt;
         std::complex<double> c = PixelToComplex(x, y, width, height, area);

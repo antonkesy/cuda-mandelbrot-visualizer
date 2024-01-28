@@ -1,5 +1,3 @@
-ARG IS_CI_BUILD=false
-
 # https://hub.docker.com/r/nvidia/cuda
 FROM nvidia/cuda:12.3.0-runtime-ubuntu22.04 as base
 
@@ -8,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /mandelbrot_visualizer
 
-# build dependencies
+# Build dependencies
 RUN apt-get update -y
 RUN apt-get install -y software-properties-common 
 RUN add-apt-repository universe -y
@@ -20,7 +18,7 @@ RUN apt-get install -y xorg-dev # GLFW
 COPY . /mandelbrot_visualizer
 RUN rm -rf build
 
-# build
+# Build
 RUN mkdir build -p
 WORKDIR /mandelbrot_visualizer/build
 RUN cmake ..
@@ -29,7 +27,9 @@ RUN cmake --build .
 # OpenMP
 ENV OMP_CANCELLATION=true
 
-# --------------------------------
+# Run tests
+WORKDIR /mandelbrot_visualizer/build/tests
+RUN ctest
 
 FROM base as ci
 # pre-commit dependencies
