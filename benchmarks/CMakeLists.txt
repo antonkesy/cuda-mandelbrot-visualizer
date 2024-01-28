@@ -1,0 +1,2 @@
+add_executable(benchmark_mandelbrot mandelbrot.cpp)
+target_link_libraries(benchmark_mandelbrot PRIVATE benchmark::benchmark mandelbrot_lib)
