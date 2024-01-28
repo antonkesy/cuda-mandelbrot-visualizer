@@ -29,7 +29,7 @@ int Mandelbrot::Iteration(const std::complex<double> &c) const {
   return n - static_cast<int>(std::log(std::log2(std::abs(z))));
 }
 
-ImVec4 Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
+Color Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
   // TODO(ak): add more color schemes
   //  https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
 

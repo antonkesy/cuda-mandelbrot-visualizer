@@ -1,18 +1,44 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 
 #include <atomic>
 #include <complex>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "settings.hpp"
 
 namespace mandelbrot_visualizer {
+
+struct Color {
+  float r;
+  float g;
+  float b;
+  float a;
+
+  bool operator==(const Color &other) const {
+    return (r == other.r) && (g == other.g) && (b == other.b) && (a == other.a);
+  }
+
+  bool operator!=(const Color &other) const { return !(*this == other); }
+};
+
+struct MandelbrotData {
+  int height;
+  int width;
+  std::vector<Color> pixels;
+
+  bool operator==(const MandelbrotData &other) const {
+    return (height == other.height) && (width == other.width) &&
+           (pixels == other.pixels);
+  }
+
+  bool operator!=(const MandelbrotData &other) const {
+    return !(*this == other);
+  }
+};
 
 class Mandelbrot {
  public:
@@ -29,16 +55,15 @@ class Mandelbrot {
   Mandelbrot &operator=(const Mandelbrot &) = delete;
   Mandelbrot &operator=(Mandelbrot &&) = delete;
 
-  // not best desing -> can be forgotten to call ...
-  virtual void Compute(const std::atomic<bool> &request_stop) = 0;
-  virtual void Draw() = 0;
+  virtual std::optional<MandelbrotData> Compute(
+      const std::atomic<bool> &request_stop) = 0;
 
   [[nodiscard]] static std::complex<double> PixelToComplex(int x, int y,
                                                            int width,
                                                            int height,
                                                            Settings::Area area);
 
-  [[nodiscard]] ImVec4 MandelbrotColor(const std::complex<double> &c) const;
+  [[nodiscard]] Color MandelbrotColor(const std::complex<double> &c) const;
 
   [[nodiscard]] int Iteration(const std::complex<double> &c) const;
 
@@ -46,7 +71,7 @@ class Mandelbrot {
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
   const int height;
   const int width;
-  std::vector<ImVec4> pixels;
+  std::vector<Color> pixels;
   const int max_iterations;
   const std::shared_ptr<float> progress;
   const Settings::Area area;

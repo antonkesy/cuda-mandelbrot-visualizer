@@ -17,6 +17,7 @@ int main(int argc, char** argv) {
   BootstrapOmpCancel(argc, argv);
 
   using mandelbrot_visualizer::Mandelbrot;
+  using mandelbrot_visualizer::MandelbrotData;
   using mandelbrot_visualizer::OpenMPMandelbrot;
   using mandelbrot_visualizer::SequentialMandelbrot;
   using mandelbrot_visualizer::Settings;
@@ -31,7 +32,7 @@ int main(int argc, char** argv) {
   const auto start_size = 900;
   Window window("Mandelbrot Visualizer", start_size, start_size);
 
-  std::unique_ptr<Mandelbrot> mandelbrot = nullptr;
+  std::optional<MandelbrotData> mandelbrot = std::nullopt;
 
   VisualizerState current_state;
   VisualizerState last_state = current_state;
@@ -40,13 +41,13 @@ int main(int argc, char** argv) {
 
   std::atomic<bool> request_stop{false};
   // FIXME: replace with stack with mutex ... or something
-  std::vector<std::future<std::unique_ptr<Mandelbrot>>> results{};
+  std::vector<std::future<std::optional<MandelbrotData>>> results{};
 
   const auto render_mandelbrot = [&](const WindowInfo& window) {
     current_state.display_width = window.width;
     current_state.display_height = window.height;
 
-    if (mandelbrot != nullptr && window.mouse_selection.has_value()) {
+    if (mandelbrot.has_value() && window.mouse_selection.has_value()) {
       const auto selection = window.mouse_selection;
       const auto before = current_state.area;
       // square constraint
@@ -69,11 +70,11 @@ int main(int argc, char** argv) {
     }
 
     if (current_state.NeedsRecomputation(last_state) ||
-        (mandelbrot == nullptr && results.empty())) {
-      mandelbrot = nullptr;
+        (!mandelbrot.has_value() && results.empty())) {
+      mandelbrot = std::nullopt;
       request_stop = true;
 
-      const auto compute = [&]() -> std::unique_ptr<Mandelbrot> {
+      const auto compute = [&]() -> auto {
         Settings settings{
             window.height,
             window.width,
@@ -92,12 +93,13 @@ int main(int argc, char** argv) {
           }
         }();
 
+        std::optional<MandelbrotData> data = std::nullopt;
         request_stop = false;
         current_state.is_computing = true;
         current_state.compute_time =
-            Stopwatch::Time([&]() { next->Compute(request_stop); });
+            Stopwatch::Time([&]() { data = next->Compute(request_stop); });
         current_state.is_computing = false;
-        return next;
+        return std::move(data);
       };
 
       results.emplace_back(std::async(std::launch::async, compute));
@@ -116,7 +118,7 @@ int main(int argc, char** argv) {
           case std::future_status::ready:
             mandelbrot = result.get();
             // invalidate computation if there are more futures available
-            if (results.size() > 1) mandelbrot = nullptr;
+            if (results.size() > 1) mandelbrot = std::nullopt;
             results.clear();
             break;
         }
@@ -124,7 +126,11 @@ int main(int argc, char** argv) {
     }
 
     current_state.draw_time = Stopwatch::Time([&]() {
-      if (mandelbrot != nullptr) mandelbrot->Draw();
+      if (mandelbrot.has_value()) {
+        glRasterPos2i(-1, -1);
+        glDrawPixels(mandelbrot->width, mandelbrot->height, GL_RGBA, GL_FLOAT,
+                     mandelbrot->pixels.data());
+      }
     });
     last_state = current_state;
   };

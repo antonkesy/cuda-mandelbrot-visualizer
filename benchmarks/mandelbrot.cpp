@@ -5,26 +5,26 @@
 #include "../src/mandelbrot/openmp.hpp"
 #include "../src/mandelbrot/sequential.hpp"
 
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-// static volatile int dummy = 0;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables,misc-use-anonymous-namespace)
+static volatile float dummy = 0;
 
 // NOLINTNEXTLINE(readability-identifier-naming,misc-use-anonymous-namespace)
 static void BM_MANDELBROT(
     benchmark::State &state,
     std::unique_ptr<mandelbrot_visualizer::Mandelbrot> mandel) {
+  std::optional<mandelbrot_visualizer::MandelbrotData> tmp = std::nullopt;
   for ([[maybe_unused]] auto _ : state) {
-    mandel->Compute(false);
+    tmp = std::move(mandel->Compute(false));
   }
 
-  // TODO(ak): compute should return list of pixels to avoid optimization
-  // dummy = A[0];
+  dummy = tmp.value().pixels[0].r;
 }
 
 auto KSettings() {
   // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
   return mandelbrot_visualizer::Settings{
-      .height = 900,
-      .width = 900,
+      .height = 1000,
+      .width = 1000,
       .max_iterations = 1000,
       .progress = std::make_shared<float>(0),
       .area = {.start = {-2.0F, -1.0F}, .end = {1.0F, 1.0F}}};
