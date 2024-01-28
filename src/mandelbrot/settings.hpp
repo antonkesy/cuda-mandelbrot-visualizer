@@ -8,8 +8,6 @@
 #include <complex>
 #include <memory>
 
-#include "../ui/color.hpp"
-
 namespace mandelbrot_visualizer {
 
 struct Settings {
@@ -25,7 +23,6 @@ struct Settings {
   };
   int height;
   int width;
-  ui::RGBColor base_color;
   int max_iterations;
   std::shared_ptr<float> progress;
   Area area;

@@ -77,7 +77,6 @@ int main(int argc, char** argv) {
         Settings settings{
             window.height,
             window.width,
-            current_state.base_color,
             current_state.max_iterations,
             current_state.progress,
             current_state.area,

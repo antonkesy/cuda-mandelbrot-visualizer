@@ -1,5 +1,7 @@
 #include "mandelbrot.hpp"
 
+#include <array>
+
 namespace mandelbrot_visualizer {
 
 std::complex<double> Mandelbrot::PixelToComplex(int x, int y, int width,
@@ -28,20 +30,16 @@ int Mandelbrot::Iteration(const std::complex<double> &c) const {
 }
 
 ImVec4 Mandelbrot::MandelbrotColor(const std::complex<double> &c) const {
+  // TODO(ak): add more color schemes
+  //  https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+
   const auto iterations = Mandelbrot::Iteration(c);
   const auto hue =
       (static_cast<float>(iterations) / static_cast<float>(max_iterations));
-  ui::RGBColor rgb{};
+  std::array<float, 3> rgb{0, 0, 0};
   ImGui::ColorConvertHSVtoRGB(hue, 1, iterations < max_iterations ? 1 : 0,
                               rgb[0], rgb[1], rgb[2]);
 
-  (void)base_color;
-  // FIXME: enable base color again
-  //  const auto add_base_color = [](float color, float hue) {
-  //    // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers)
-  //    return std::clamp(0.0F, (color / 255), 1.0F);
-  //    // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
-  //  };
   return {rgb[0], rgb[1], rgb[2], 1.0F};
 }
 

@@ -18,7 +18,6 @@ class Menu {
   static void FpsInfo();
   static void DurationInfo(VisualizerState& state);
   static void WindowInfo(VisualizerState& state);
-  static void SetColor(RGBColor& current);
   static void SetMaxIterations(int& current);
   static void InteractionInfo();
 };

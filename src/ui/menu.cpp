@@ -18,7 +18,6 @@ void Menu::ShowMenu(VisualizerState& state) {
   ImGui::Dummy(ImVec2(0.0F, kVSpace));
   ModeCombo(state.mode);
   SetMaxIterations(state.max_iterations);
-  SetColor(state.base_color);
   ImGui::Dummy(ImVec2(0.0F, kVSpace));
   InteractionInfo();
   ImGui::End();
@@ -61,10 +60,6 @@ void Menu::DurationInfo(VisualizerState& state) {
 void Menu::WindowInfo(VisualizerState& state) {
   ImGui::Text(  // NOLINT(cppcoreguidelines-pro-type-vararg)
       "Window Size: %ix%i", state.display_width, state.display_height);
-}
-
-void Menu::SetColor(RGBColor& current) {
-  ImGui::ColorEdit3("Base Color", current.data());
 }
 
 void Menu::SetMaxIterations(int& current) {

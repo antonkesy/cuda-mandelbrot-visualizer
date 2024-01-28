@@ -20,7 +20,6 @@ class Mandelbrot {
       : height(settings.height),
         width(settings.width),
         pixels(height * width),
-        base_color(settings.base_color),
         max_iterations(settings.max_iterations),
         progress(settings.progress),
         area(settings.area) {}
@@ -45,7 +44,6 @@ class Mandelbrot {
 
  protected:
   // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,cppcoreguidelines-avoid-const-or-ref-data-members)
-  ui::RGBColor base_color{};
   const int height;
   const int width;
   std::vector<ImVec4> pixels;
