@@ -23,7 +23,8 @@ class OpenMPMandelbrot : public Mandelbrot {
 #pragma omp parallel shared(pixels, request_stop) default(none)
 #pragma omp for schedule(dynamic)
     for (int y = 0; y < height; ++y) {
-      *progress = static_cast<float>(y) / static_cast<float>(height);
+      if (progress)
+        *progress = static_cast<float>(y) / static_cast<float>(height);
       if (request_stop) {
 #pragma omp cancel for
       }
@@ -35,7 +36,7 @@ class OpenMPMandelbrot : public Mandelbrot {
     if (request_stop) {
       return std::nullopt;
     }
-    *progress = 1;
+    if (progress) *progress = 1;
 
     return std::make_optional<MandelbrotData>({height, width, pixels});
   }

@@ -11,7 +11,7 @@ class SequentialMandelbrot : public Mandelbrot {
 
   std::optional<MandelbrotData> Compute(
       const std::atomic<bool>& request_stop) override {
-    *progress = 0;
+    if (progress) *progress = 0;
     for (int y = 0; y < height; ++y) {
       *progress = static_cast<float>(y) / static_cast<float>(height);
       for (int x = 0; x < width; ++x) {
@@ -20,7 +20,7 @@ class SequentialMandelbrot : public Mandelbrot {
         pixels[y * width + x] = MandelbrotColor(c);
       }
     }
-    *progress = 1;
+    if (progress) *progress = 1;
     return std::make_optional<MandelbrotData>({height, width, pixels});
   }
 };

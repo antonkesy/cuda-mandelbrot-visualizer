@@ -9,7 +9,7 @@ auto TestSettings() {
       .height = 1000,
       .width = 1000,
       .max_iterations = 1000,
-      .progress = std::make_shared<float>(0),
+      .progress = nullptr,
       .area = {.start = {-2.0F, -1.0F}, .end = {1.0F, 1.0F}}};
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
 }
