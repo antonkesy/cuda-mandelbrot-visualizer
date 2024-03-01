@@ -15,6 +15,7 @@ RUN apt-get install -y freeglut3-dev # OpenGL
 RUN apt-get install -y build-essential libxmu-dev libxi-dev libgl-dev # GLEW
 RUN apt-get install -y xorg-dev # GLFW
 
+FROM base as build
 COPY . /mandelbrot_visualizer
 RUN rm -rf build
 
@@ -24,14 +25,16 @@ WORKDIR /mandelbrot_visualizer/build
 RUN cmake ..
 RUN cmake --build .
 
+FROM build as run
 # OpenMP
 ENV OMP_CANCELLATION=true
 
+FROM run as test
 # Run tests
 WORKDIR /mandelbrot_visualizer/build/tests
 RUN ctest
 
-FROM base as ci
+FROM test as ci
 # pre-commit dependencies
 RUN apt-get install -y git python3 python3-pip clang-format clang-tidy
 RUN pip3 install pre-commit
